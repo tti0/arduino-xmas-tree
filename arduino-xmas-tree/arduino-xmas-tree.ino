@@ -9,20 +9,21 @@ int statusAddress = 0;
 byte statusValue;
 
 void setup() {
-  // EEPROM.write(statusAddress, 0); // run this on a "fresh" board
+  // test LED for output
   pinMode(13, OUTPUT);
+  
   statusValue = EEPROM.read(statusAddress);
-  // if we are in steady mode
-  if (statusValue == 0) {
+  if (statusValue == 0) {  // if we are in steady mode
     // set to blink for next time
     EEPROM.write(statusAddress, 1);
     // steady light
     digitalWrite(13, HIGH);
-  }
-  // if we are in blink mode
-  if (statusValue == 1) {
+  } else if (statusValue == 1) {  // if we are in blink mode
     // set to steady for next time
-    EEPROM.write(statusAddress, 0);  
+    EEPROM.write(statusAddress, 0);
+  } else {  // if the EEPROM has some other value
+    EEPROM.write(statusAddress, 0);
+    setup();
   }
 }
 
