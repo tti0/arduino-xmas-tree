@@ -1,23 +1,33 @@
 // arduino-xmas-tree
 
-// Currently in early-stage development/testing.
-// The built-in LED (pin 13) should, on alternating boot-ups, blink or remain steady on.
+// Copyright (c) tti0 2021
+// Licensed under the MIT License (/LICENSE)
+// Hardware setup details in /README.md
+
+// This sketch will, on alternating boot-ups of the Arduino:
+//    (0) Set all of the pins in outputPins HIGH (steady on), or;
+//    (1) Set a random pin to a random value (HIGH or LOW) every XXms (twinkling effect)
 
 #include <EEPROM.h>
+
+int outputPins[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, A0, A1, A2, A3, A4, A5};
 
 int statusAddress = 0;
 byte statusValue;
 
 void setup() {
-  // test LED for output
-  pinMode(13, OUTPUT);
+  for (byte i = 0; i < 20; i = i + 1) {
+    pinMode(outputPins[i], OUTPUT);
+  }
   
   statusValue = EEPROM.read(statusAddress);
   if (statusValue == 0) {  // if we are in steady mode
     // set to blink for next time
     EEPROM.write(statusAddress, 1);
     // steady light
-    digitalWrite(13, HIGH);
+    for (byte i = 0; i < 20; i = i + 1) {
+      digitalWrite(outputPins[i], HIGH);
+    }
   } else if (statusValue == 1) {  // if we are in blink mode
     // set to steady for next time
     EEPROM.write(statusAddress, 0);
@@ -28,10 +38,9 @@ void setup() {
 }
 
 void loop() {
+  // if in blink mode
   if (statusValue == 1) {
-    digitalWrite(13, HIGH);
-    delay(500);
-    digitalWrite(13, LOW);
-    delay(500);
+    digitalWrite(outputPins[random(0, 20)], random(0, 2));
+    delay(50);
   }
 }
